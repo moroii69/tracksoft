@@ -1,8 +1,10 @@
-import { db } from '@/lib/firebase' // Firestore instance
+import dynamic from 'next/dynamic'
+import { db } from '@/lib/firebase'
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
-import EditSoftwareClient from './edit-client' // Import the client-side component
 
-// Define types for software data
+// Dynamically import EditSoftwareClient with ssr: false to ensure it only runs on the client side
+const EditSoftwareClient = dynamic(() => import('./edit-client'), { ssr: false })
+
 interface Software {
   id: string
   name: string
@@ -14,9 +16,8 @@ interface Software {
   userId: string
 }
 
-// Generate static params for Next.js dynamic routes
 export async function generateStaticParams() {
-  const softwareCollection = collection(db, 'software') // Replace 'software' with your collection name
+  const softwareCollection = collection(db, 'software')
   const snapshot = await getDocs(softwareCollection)
   const softwareList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Software[]
 
@@ -25,20 +26,18 @@ export async function generateStaticParams() {
   }))
 }
 
-// EditSoftwarePage Component
 export default async function EditSoftwarePage({
   params,
 }: {
-  params: Promise<{ id: string }> // Ensure params is a Promise that resolves to an object with `id`
+  params: Promise<{ id: string }>
 }) {
-  const resolvedParams = await params // Resolve the Promise
+  const resolvedParams = await params
 
-  // Fetching the software data by its ID
-  const docRef = doc(db, 'software', resolvedParams.id) // Replace 'software' with your collection name
+  // Fetch the software data by its ID
+  const docRef = doc(db, 'software', resolvedParams.id)
   const docSnapshot = await getDoc(docRef)
 
   if (!docSnapshot.exists()) {
-    // Return 404 or error page if software not found
     return <div>Software not found</div>
   }
 
@@ -54,5 +53,6 @@ export default async function EditSoftwarePage({
     userId: softwareData.userId,
   }
 
+  // Pass the fetched data to the dynamically imported client component
   return <EditSoftwareClient initialSoftware={software} />
 }
