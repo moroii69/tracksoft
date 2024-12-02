@@ -1,6 +1,16 @@
-import dynamic from 'next/dynamic'
+'use client' // This will ensure that the following component is treated as a client-side component
+
+import { useState } from 'react'
+import { useRouter } from 'next/router'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
+import { Software } from '@/lib/types'
+import { updateSoftware } from '@/lib/db'
+import { SoftwareForm } from '@/components/software/software-form'
+import { useToast } from '@/hooks/use-toast'
+
+// Dynamically import EditSoftwareClient
+import dynamic from 'next/dynamic'
 
 // Dynamically import EditSoftwareClient with ssr: false to ensure it only runs on the client side
 const EditSoftwareClient = dynamic(() => import('./edit-client'), { ssr: false })
