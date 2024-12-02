@@ -25,7 +25,17 @@ export default async function EditSoftwarePage({
     return <div>Software not found</div>
   }
 
-  const software = { id: docSnapshot.id, ...docSnapshot.data() }
+  const softwareData = docSnapshot.data()
+  const software = {
+    id: docSnapshot.id,
+    name: softwareData.name,
+    version: softwareData.version,
+    installationDate: softwareData.installationDate,
+    size: softwareData.size,
+    category: softwareData.category,
+    installationPath: softwareData.installationPath,
+    userId: softwareData.userId,
+  }
 
   return <EditSoftwareClient initialSoftware={software} />
 }
