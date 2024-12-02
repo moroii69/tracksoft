@@ -1,5 +1,4 @@
-'use client'
-
+"use client"
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Software } from '@/lib/types'
@@ -17,8 +16,18 @@ export default function EditSoftwareClient({
   const [software, setSoftware] = useState<Software | null>(initialSoftware)
 
   const handleSubmit = async (data: Omit<Software, 'id' | 'userId'>) => {
+    if (!software?.id) {
+      // If software.id is undefined, show an error and return
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Software ID is missing',
+      })
+      return
+    }
+
     try {
-      await updateSoftware(software?.id, data)
+      await updateSoftware(software.id, data) // Now it's guaranteed to be a string
       toast({
         title: 'Success',
         description: 'Software updated successfully',
