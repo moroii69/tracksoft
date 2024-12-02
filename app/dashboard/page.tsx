@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/components/providers/auth-provider'
 import { Software } from '@/lib/types'
@@ -23,20 +21,23 @@ import {
 import { useToast } from '@/hooks/use-toast'
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const { user } = useAuth()  // Get the user from the auth provider
   const [software, setSoftware] = useState<Software[]>([])
   const [filteredSoftware, setFilteredSoftware] = useState<Software[]>([])
   const router = useRouter()
   const { toast } = useToast()
 
+  // Redirect to login if the user is not signed in
   useEffect(() => {
-    if (user) {
+    if (!user) {
+      router.push('/login')  // Redirect to login if no user is found
+    } else {
       getUserSoftware(user.uid).then((data) => {
         setSoftware(data)
         setFilteredSoftware(data)
       })
     }
-  }, [user])
+  }, [user, router])  // Dependencies include user and router to handle both cases
 
   const handleSearch = (query: string) => {
     const filtered = software.filter((item) =>
@@ -61,6 +62,11 @@ export default function DashboardPage() {
         description: error.message,
       })
     }
+  }
+
+  if (!user) {
+    // Optionally return null while redirecting or loading
+    return null
   }
 
   return (

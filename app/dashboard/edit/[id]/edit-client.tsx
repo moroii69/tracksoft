@@ -1,6 +1,6 @@
 "use client"
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router' // Changed import
 import { Software } from '@/lib/types'
 import { updateSoftware } from '@/lib/db'
 import { SoftwareForm } from '@/components/software/software-form'
